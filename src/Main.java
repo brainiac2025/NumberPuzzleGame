@@ -20,10 +20,13 @@ public class Main  extends JPanel {
     private int margin;
     private static final Color FORECOLOR= new Color(80, 156, 239);
     private static final Random RANDOM= new Random();
+
+
     public Main(int size, int dim, int mar){
     this.size=size;
     this.dimension=dim;
     this.margin=mar;
+
     //initializing the tiles
     numOfTiles=size*size-1;  //i had to subtract -1 becuase of empty space
     tiles=new int[size*size];
@@ -37,52 +40,9 @@ public class Main  extends JPanel {
         setForeground(FORECOLOR);
         setFont(new Font("Ariel", Font.BOLD, 50));
         gameOver=true;
+
     addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            super.mouseClicked(e);
-        }
 
-        @Override
-        public void mousePressed(MouseEvent e) {
-            super.mousePressed(e);
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            super.mouseReleased(e);
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            super.mouseEntered(e);
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            super.mouseExited(e);
-        }
-
-        @Override
-        public void mouseWheelMoved(MouseWheelEvent e) {
-            super.mouseWheelMoved(e);
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            super.mouseDragged(e);
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-            super.mouseMoved(e);
-        }
-    });
-    addMouseListener(new MouseListener() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
-        }
 
         @Override
         public void mousePressed(MouseEvent e) {
@@ -100,8 +60,9 @@ public class Main  extends JPanel {
                 //get position on grid
                 int c1=ex/tilesSize;
                 int r1=ey/tilesSize;
+                //get position of empty cell
                 int c2=emptyPos%size;
-                int r2=emptyPos%size;
+                int r2=emptyPos/size;
 
                 //ID cordination
                  int clickPos=r1*size+c1;
@@ -111,7 +72,7 @@ public class Main  extends JPanel {
                 if(c1==c2 && Math.abs(r1-r2)>0)
                     dir=(r1-r2)>0?size: -size;
                 else if(r1==r2 && Math.abs(c1-c2)>0)
-                    dir=(c1-c2)>0?size: -size;
+                    dir=(c1-c2)>0? 1: -1;
                 if(dir!=0){
                     //move tiles in the direction
                     do{
@@ -132,20 +93,7 @@ public class Main  extends JPanel {
 
         }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
 
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
     });
 
     initGame();
@@ -202,7 +150,7 @@ public class Main  extends JPanel {
         gameOver=false;
 
     }
-    private void drwaGrid(Graphics2D g){
+    private void drawGrid(Graphics2D g){
         for(int i=0; i<tiles.length; i++){
             int row=i/size;
             int column=i%size;
@@ -212,7 +160,7 @@ public class Main  extends JPanel {
             if (tiles[i]==0){
                 if(gameOver){
                     g.setColor(FORECOLOR);
-                    drawcentreString(g, "\u273", x, y);
+                    drawcentreString(g, "\u2713", x, y);
 
                 }
                 continue;
@@ -229,8 +177,37 @@ public class Main  extends JPanel {
         }
     }
 
-    private void drawcentreString(Graphics2D g, String s, int x, int y) {
+    private void drawStartMessage(Graphics2D g) {
+        if(gameOver){
+            g.setFont(getFont().deriveFont(Font.BOLD, 18));
+            g.setColor(FORECOLOR);
+            String ss="Click Here TO Start New Game";
+            g.drawString(ss, (getWidth() - g.getFontMetrics().stringWidth(ss)) / 2, getHeight()-margin);
+
+        }
     }
+
+    private void drawcentreString(Graphics2D g, String ss, int x, int y) {
+        FontMetrics fm=g.getFontMetrics();
+        int ascending=fm.getAscent();
+        int descending=fm.getDescent();
+        g.drawString(ss, x+(tilesSize-fm.stringWidth(ss))/ 2, y
+                    +(ascending+(tilesSize-(ascending+descending))/2 ));
+
+    }
+
+
+
+    @Override
+    protected void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2d=(Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        drawGrid(g2d);
+        drawStartMessage(g2d);
+
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(()->{
