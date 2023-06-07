@@ -28,6 +28,15 @@ public class Main  extends JPanel {
     numOfTiles=size*size-1;  //i had to subtract -1 becuase of empty space
     tiles=new int[size*size];
 
+    //calculate the grid size
+        gridSize=(dim-2*margin);
+        tilesSize=gridSize/size;
+
+        setPreferredSize(new Dimension(dimension, dimension+margin));
+        setBackground(Color.WHITE);
+        setForeground(FORECOLOR);
+        setFont(new Font("Ariel", Font.BOLD, 50));
+        gameOver=true;
     addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -189,11 +198,51 @@ public class Main  extends JPanel {
             reset();
             shuffle();
         }
-        while(isSolved()){
-            emptyPos=tiles.length-1;
+        while(isSolved());
+        gameOver=false;
+
+    }
+    private void drwaGrid(Graphics2D g){
+        for(int i=0; i<tiles.length; i++){
+            int row=i/size;
+            int column=i%size;
+            int x=margin+column*tilesSize;
+            int y=margin+row*tilesSize;
+
+            if (tiles[i]==0){
+                if(gameOver){
+                    g.setColor(FORECOLOR);
+                    drawcentreString(g, "\u273", x, y);
+
+                }
+                continue;
+            }
+
+            // for other tiles
+            g.setColor(getForeground());
+            g.fillRoundRect(x, y, tilesSize, tilesSize,25, 25);
+            g.setColor(Color.BLACK);
+            g.drawRoundRect(x,y,tilesSize,tilesSize,25,25);
+            g.setColor(Color.WHITE);
+            drawcentreString(g, String.valueOf(tiles[i]), x, y);
+
         }
     }
+
+    private void drawcentreString(Graphics2D g, String s, int x, int y) {
+    }
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        SwingUtilities.invokeLater(()->{
+            JFrame frame = new JFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setTitle("Puzzle Game");
+            frame.setResizable(false);
+
+            frame.add(new Main(4, 550, 30), BorderLayout.CENTER);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
     }
 }
