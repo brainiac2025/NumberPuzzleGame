@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class Main  extends JPanel {
 
+
     //draw the grid in jpanel
     private int size;
     private int numOfTiles;
@@ -50,6 +51,7 @@ public class Main  extends JPanel {
                 initGame();
             }
             else{
+                //get position of the click
                 int ex=e.getX()-margin;
                 int ey=e.getY()-margin;
 
@@ -60,6 +62,7 @@ public class Main  extends JPanel {
                 //get position on grid
                 int c1=ex/tilesSize;
                 int r1=ey/tilesSize;
+
                 //get position of empty cell
                 int c2=emptyPos%size;
                 int r2=emptyPos/size;
@@ -99,14 +102,28 @@ public class Main  extends JPanel {
     initGame();
     }
 
-    private void reset(){
+    private void initGame(){
+
+        do{
+            reset();
+            shuffle();
+        }
+        while(isSolved());
+        gameOver=false;
+
+    }
+
+
+    //reset the game after completion
+    protected void reset(){
         for(int i=0; i<tiles.length; i++){
             tiles[i]=(i+1) % tiles.length;
         }
         emptyPos=tiles.length-1;
     }
 
-    public void shuffle(){
+    //shuffle the number function
+    protected void shuffle(){
         int n=numOfTiles;
         while(n>1){
             int r= RANDOM.nextInt(n--);
@@ -116,7 +133,8 @@ public class Main  extends JPanel {
         }
     }
 
-    private boolean isSolved(){
+
+    protected boolean isSolved(){
         int count=0;
         for(int i =0; i<numOfTiles; i++){
             for(int j=0; j<i; j++){
@@ -128,6 +146,7 @@ public class Main  extends JPanel {
         return count % 2==0;
     }
 
+
     private boolean solved(){
         if(tiles[tiles.length-1]!=0){
             return false;
@@ -136,27 +155,21 @@ public class Main  extends JPanel {
         for(int i=numOfTiles-1; i>=0; i--){
 
             if(tiles[i]!=i+1)
-                return true;
+                return false;
         }
         return true;
     }
-    private void initGame(){
 
-        do{
-            reset();
-            shuffle();
-        }
-        while(isSolved());
-        gameOver=false;
 
-    }
+
     private void drawGrid(Graphics2D g){
         for(int i=0; i<tiles.length; i++){
             int row=i/size;
             int column=i%size;
+            //convert cordinate on frame
             int x=margin+column*tilesSize;
             int y=margin+row*tilesSize;
-
+            //checking case for blank tiles
             if (tiles[i]==0){
                 if(gameOver){
                     g.setColor(FORECOLOR);
@@ -213,10 +226,10 @@ public class Main  extends JPanel {
         SwingUtilities.invokeLater(()->{
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setTitle("Puzzle Game");
+            frame.setTitle("Number Puzzle Game");
             frame.setResizable(false);
 
-            frame.add(new Main(4, 550, 30), BorderLayout.CENTER);
+            frame.add(new Main(3, 700, 40), BorderLayout.CENTER);
             frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
